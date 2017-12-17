@@ -1,0 +1,24 @@
+version: '2'
+volumes:
+  influxdb_volume: ./volumes/influxdb
+  grafana_volume: ./volumes/grafana
+  app_volume: ./
+services:
+  bittrex_observer:
+    volumes:
+      app_volume:/bittrex_observer
+    image: Dockerfile
+  influxdb:
+    image: influxdb
+    volumes:
+      influxdb_volume:/document/workspace
+    ports:
+      - "8083:8083"
+      - "8086:8086"
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "8000:3000"
+    command: GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      grafana_volume:/var/lib/influxdb
