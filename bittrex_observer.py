@@ -2,17 +2,30 @@ import requests
 from influxdb import InfluxDBClient
 from slack_utils import SlackUtils
 import time
-import sys
+from datetime import datetime
 import traceback
 import logging
 
+
 def main():
-    print("START^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
-    logging.info("unko")
     execute()
 
 
+def logger_builder(name):
+    """
+    return logger
+    :param name: log file name
+    :return: logger
+    """
+    logging.basicConfig(format="[%(asctime)s] %(levelname)s - %(message)s", filemode='a',
+                        filename="log/{date}-{name}.log".format(date=datetime.now().strftime("%Y-%m-%d"),
+                                                                name=name), level=logging.INFO)
+    return logging.getLogger()
+
+
 def execute():
+    logger = logger_builder("exec")
+    logger.info("start")
     slack = SlackUtils()
     client = connect_influxdb()
     while True:
@@ -26,12 +39,13 @@ def execute():
             time.sleep(60)
         except:
             error = traceback.format_exc()
+            logger.error(error)
             slack.danger(message=error, channel="bittrex")
-            print(error)
             exit(1)
 
 
 def connect_influxdb():
+    logger_builder("exec").info("connect influxdb...")
     client = InfluxDBClient(host='localhost', port=8086, username='root', password='root', database='bittrex')
     dbs = client.get_list_database()
     bittrex_db = {'name': 'bittrex'}
@@ -53,7 +67,6 @@ def data_format(summary_result):
         'tags': tags_format(summary_result),
         'measurement': 'markets'
     }
-    print (data)
     return data
 
 
