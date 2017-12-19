@@ -35,6 +35,7 @@ def execute():
                 data = map(data_format, summary["result"])
                 client.write_points(data)
             else:
+                logger.warning(message="message={message}".format(message=summary["message"]))
                 slack.warn(message="message={message}".format(message=summary["message"]), channel="bittrex")
             time.sleep(60)
         except:
