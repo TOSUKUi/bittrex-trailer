@@ -47,7 +47,7 @@ def execute():
 
 def connect_influxdb():
     logger_builder("exec").info("connect influxdb...")
-    client = InfluxDBClient(host='localhost', port=8086, username='root', password='root', database='bittrex')
+    client = InfluxDBClient(host='localhost', port=8002, username='root', password='root', database='bittrex')
     dbs = client.get_list_database()
     bittrex_db = {'name': 'bittrex'}
     if bittrex_db not in dbs:
